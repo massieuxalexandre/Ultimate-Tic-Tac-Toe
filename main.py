@@ -3,16 +3,14 @@ from grid import Grid, UltimateGrid
 from utils import *
 
 def main():
-    mini_grids_locations = [
-        ["top_left", "top_center", "top_right"],
-        ["center_left", "center_center", "center_right"], 
-        ["bottom_left", "bottom_center", "bottom_right"]
+    mini_grids_locations = ["top_left", "top_center", "top_right",
+        "center_left", "center_center", "center_right", 
+        "bottom_left", "bottom_center", "bottom_right"
     ]
-    player = Player("Moi", 'O')
-    ai = Player("AI", 'X')
+    player = Player("Alex", 'X')
+    ai = Player("AI", 'O')
     
     ultimate_grid = UltimateGrid(mini_grids_locations, player, ai)
-    # ultimate_grid.print_grid()
 
     print("Qui commence la partie ? :")
     print("1.", player.name)
@@ -33,6 +31,11 @@ def main():
     
     clear()
     ultimate_grid.print_grid()
+
+    row_mini = "1"
+    row_maxi = "9"
+    column_mini = "1"
+    column_maxi = "9"
     while True:
         if (tour % 2 == 0):
             print("C'est à", player.name, "de jouer")
@@ -40,6 +43,7 @@ def main():
             column = str(input())
             if not valid_choice(column, 1, 9):
                 clear()
+                ultimate_grid.print_grid()
                 print("Colonne invalide, veuillez réessayer")
                 print()
                 continue
@@ -49,17 +53,19 @@ def main():
             clear()
             if not valid_choice(row, 1, 9):
                 clear()
+                ultimate_grid.print_grid()
                 print("Ligne invalide, veuillez réessayer")
                 print()
                 continue
 
-            if not play(player, ultimate_grid, int(column), int(row)):
+            if not ultimate_grid.play(player, int(column), int(row)):
                 clear()
+                ultimate_grid.print_grid()
                 print("Case déjà occupée, veuillez réessayer")
                 print()
                 continue
             else:
-                print("Vous avez joué en colonne", column, "et ligne", row)
+                print(player.name, "a joué en colonne", column, "et ligne", row)
 
         else:
             print("C'est à", ai.name, "de jouer")
@@ -67,6 +73,7 @@ def main():
             column = str(input())
             if not valid_choice(column, 1, 9):
                 clear()
+                ultimate_grid.print_grid()
                 print("Colonne invalide, veuillez réessayer")
                 print()
                 continue
@@ -75,20 +82,23 @@ def main():
             row = str(input())
             if not valid_choice(row, 1, 9):
                 clear()
+                ultimate_grid.print_grid()
                 print("Ligne invalide, veuillez réessayer")
                 print()
                 continue
             clear()
 
-            if not play(ai, ultimate_grid, int(column), int(row)):
+            if not ultimate_grid.play(ai, int(column), int(row)):
                 clear()
+                ultimate_grid.print_grid()
                 print("Case déjà occupée, veuillez réessayer")
                 print()
                 continue
             else:
-                print("L'AI a joué en colonne", column, "et ligne", row)
+                print(ai.name, "a joué en colonne", column, "et ligne", row)
             
         ultimate_grid.print_grid()
+        
         tour += 1
 
 
