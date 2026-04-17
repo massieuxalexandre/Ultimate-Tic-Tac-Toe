@@ -65,8 +65,47 @@ class Grid:
                 return "bottom_right"
             
 
-    def next_grid(self, column, row):
-        self.get_location(column, row)
+    def find_next_grid(self, column, row):
+        if (column, row) == (0, 0):
+            return "top_left"
+        elif (column, row) == (1, 0):
+            return "top_center"
+        elif (column, row) == (2, 0):
+            return "top_right"
+        elif (column, row) == (0, 1):
+            return "center_left"
+        elif (column, row) == (1, 1):
+            return "center_center"
+        elif (column, row) == (2, 1):
+            return "center_right"
+        elif (column, row) == (0, 2):
+            return "bottom_left"
+        elif (column, row) == (1, 2):
+            return "bottom_center"
+        elif (column, row) == (2, 2):
+            return "bottom_right"
+        else:
+            return None
+        
+    def has_winner(self):
+        for row in self.grid:
+            if row[0] == row[1] == row[2] != ' ':
+                self.winner = row[0]
+                return True
+
+        for col in range(3):
+            if self.grid[0][col] == self.grid[1][col] == self.grid[2][col] != ' ':
+                self.winner = self.grid[0][col]
+                return True
+
+        if self.grid[0][0] == self.grid[1][1] == self.grid[2][2] != ' ':
+            self.winner = self.grid[0][0]
+            return True
+        if self.grid[0][2] == self.grid[1][1] == self.grid[2][0] != ' ':
+            self.winner = self.grid[0][2]
+            return True
+
+        return False
 
 
     def is_full(self):
@@ -84,18 +123,61 @@ class UltimateGrid(Grid):
         for location in mini_grids_locations:
             self.grid[location] = Grid(location, player_1, player_2)
 
+        self.next_grid = None
+
 
     def play(self, player, column, row):
         column -= 1
         row -= 1
 
-        location = self.get_location(column, row)
-        mini_grid = self.grid[location]
+        target_location = self.get_location(column, row)
+
+        if self.next_grid != None and self.next_grid != target_location:
+            return False
+
+        mini_grid = self.grid[target_location]
+        if mini_grid.has_winner() or mini_grid.is_full():
+            return False
         (row, column) = mini_grid.convert_coordinates(column, row) 
 
-        return mini_grid.play(player, column, row)
+        if mini_grid.play(player, column, row):
+            self.next_grid = mini_grid.find_next_grid(column, row)
+            if self.grid[self.next_grid].is_full() or self.grid[self.next_grid].has_winner():
+                self.next_grid = None
+            return True
+        
+        return False
         
             
+    def is_full(self):
+        for location in self.grid:
+            if not self.grid[location].is_full():
+                return False
+            
+        return True
+    
+    def has_winner(self):
+        for row in range(0, 9, 3):
+            if self.grid[self.get_location(0, row)].has_winner() and self.grid[self.get_location(3, row)].has_winner() and self.grid[self.get_location(6, row)].has_winner():
+                if self.grid[self.get_location(0, row)].winner == self.grid[self.get_location(3, row)].winner == self.grid[self.get_location(6, row)].winner:
+                    self.winner = self.grid[self.get_location(0, row)].winner
+                    return True
+        
+        for col in range(0, 9, 3):
+            if self.grid[self.get_location(col, 0)].has_winner() and self.grid[self.get_location(col, 3)].has_winner() and self.grid[self.get_location(col, 6)].has_winner():
+                if self.grid[self.get_location(col, 0)].winner == self.grid[self.get_location(col, 3)].winner == self.grid[self.get_location(col, 6)].winner:
+                    self.winner = self.grid[self.get_location(col, 0)].winner
+                    return True
+                
+        if self.grid[self.get_location(0, 0)].has_winner() and self.grid[self.get_location(3, 3)].has_winner() and self.grid[self.get_location(6, 6)].has_winner():
+            if self.grid[self.get_location(0, 0)].winner == self.grid[self.get_location(3, 3)].winner == self.grid[self.get_location(6, 6)].winner:
+                self.winner = self.grid[self.get_location(0, 0)].winner
+                return True
+        if self.grid[self.get_location(0, 6)].has_winner() and self.grid[self.get_location(3, 3)].has_winner() and self.grid[self.get_location(6, 0)].has_winner():
+            if self.grid[self.get_location(0, 6)].winner == self.grid[self.get_location(3, 3)].winner == self.grid[self.get_location(6, 0)].winner:
+                self.winner = self.grid[self.get_location(0, 6)].winner
+                return True
+        
 
     def print_grid(self):
         # 1. On définit la disposition visuelle des clés de ton dictionnaire

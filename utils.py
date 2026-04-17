@@ -1,7 +1,7 @@
 
 
 def clear():
-    for i in range(100):
+    for _ in range(100):
         print()
 
 def valid_choice(choice, start, end):
