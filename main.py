@@ -1,4 +1,4 @@
-from player import Player
+from player import Player, AI
 from grid import Grid, UltimateGrid
 from utils import *
 
@@ -8,11 +8,13 @@ def main():
         "bottom_left", "bottom_center", "bottom_right"
     ]
     player_1 = Player("Alex", 'X')
-    player_2 = Player("AI", 'O')
+    # player_2 = Player("AI", 'O')
+    player_2 = AI("AI", 'O', 3)
     players = [player_1, player_2]
     
     ultimate_grid = UltimateGrid(mini_grids_locations, player_1, player_2)
 
+    print("Bienvenue dans Ultimate Tic Tac Toe")
     print("Qui commence la partie ? :")
     print("1.", player_1.name)
     print("2.", player_2.name)
@@ -46,24 +48,30 @@ def main():
             print(player.name, "doit jouer dans la grille", ultimate_grid.next_grid)
         else:
             print(player.name, "peut jouer dans n'importe quelle grille")
-        print("Colonne : ", end='')
-        column = str(input())
-        if not valid_choice(column, 1, 9):
+
+        if isinstance(player, AI):
+            action = player.get_action(ultimate_grid)
+            column, row = action[0], action[1]
+
+        else:
+            print("Colonne : ", end='')
+            column = str(input())
+            if not valid_choice(column, 1, 9):
+                clear()
+                ultimate_grid.print_grid()
+                print("Colonne invalide, veuillez réessayer")
+                print()
+                continue
+            
+            print("Ligne : ", end='')
+            row = str(input())
             clear()
-            ultimate_grid.print_grid()
-            print("Colonne invalide, veuillez réessayer")
-            print()
-            continue
-        
-        print("Ligne : ", end='')
-        row = str(input())
-        clear()
-        if not valid_choice(row, 1, 9):
-            clear()
-            ultimate_grid.print_grid()
-            print("Ligne invalide, veuillez réessayer")
-            print()
-            continue
+            if not valid_choice(row, 1, 9):
+                clear()
+                ultimate_grid.print_grid()
+                print("Ligne invalide, veuillez réessayer")
+                print()
+                continue
 
         if not ultimate_grid.play(player, int(column), int(row)):
             clear()
@@ -78,7 +86,6 @@ def main():
             print(player.name, "a joué en colonne", column, "et ligne", row)
             
         ultimate_grid.print_grid()
-        
         tour += 1
 
 

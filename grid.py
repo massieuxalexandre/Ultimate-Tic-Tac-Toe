@@ -141,6 +141,9 @@ class UltimateGrid(Grid):
         (row, column) = mini_grid.convert_coordinates(column, row) 
 
         if mini_grid.play(player, column, row):
+            if mini_grid.winner is None:
+                mini_grid.has_winner()
+                
             self.next_grid = mini_grid.find_next_grid(column, row)
             if self.grid[self.next_grid].is_full() or self.grid[self.next_grid].has_winner():
                 self.next_grid = None
@@ -179,8 +182,25 @@ class UltimateGrid(Grid):
                 return True
         
 
+    def get_possible_actions(self):
+        actions = []
+        for col in range(1, 10):
+            for row in range(1, 10):
+                target_location = self.get_location(col-1, row-1)
+                if self.next_grid != None and self.next_grid != target_location:
+                    continue
+                mini_grid = self.grid[target_location]
+                if mini_grid.has_winner() or mini_grid.is_full():
+                    continue
+
+                (locals_row, local_col) = mini_grid.convert_coordinates(col-1, row-1)
+                if mini_grid.grid[locals_row][local_col] == ' ':
+                    actions.append((col, row))
+
+        return actions
+
+
     def print_grid(self):
-        # 1. On définit la disposition visuelle des clés de ton dictionnaire
         layout = [
             ["top_left", "top_center", "top_right"],
             ["center_left", "center_center", "center_right"],
@@ -188,28 +208,30 @@ class UltimateGrid(Grid):
         ]
         
         print()
-        for i in range(3): # Parcourt le "layout" ligne par ligne (top, center, bottom)
-            for j in range(3): # Parcourt les 3 lignes à l'intérieur des mini-grilles
+        # 1. En-tête des colonnes (parfaitement aligné avec les centres des cases)
+        print("    1   2   3   4   5   6   7   8   9")
+        
+        for i in range(3): 
+            for j in range(3): 
                 ligne = []
-                for k in range(3): # Parcourt les 3 colonnes du "layout" (left, center, right)
-                    
-                    # On récupère le nom ("top_left", etc.)
+                for k in range(3): 
                     location_name = layout[i][k]
-                    # On va chercher la bonne mini-grille dans ton dictionnaire
                     mini_grid = self.grid[location_name]
-                    # On extrait la ligne 'j' de cette mini-grille
                     cellules = mini_grid.grid[j]
                     
                     ligne.append(" " + " │ ".join(cellules) + " ")
                 
-                # On assemble la grande ligne avec la double barre ║
-                print("║".join(ligne))
+                # 2. On calcule le numéro de la ligne globale (de 1 à 9)
+                numero_ligne = i * 3 + j + 1
                 
-                # Séparateurs simples entre les lignes des petites grilles
+                # 3. On affiche ce numéro avant la ligne de la grille
+                print(f" {numero_ligne} " + "║".join(ligne))
+                
                 if j < 2:
-                    print("───┼───┼───║───┼───┼───║───┼───┼───")   
+                    # 4. On décale le séparateur de 3 espaces pour faire place au numéro
+                    print("   ───┼───┼───║───┼───┼───║───┼───┼───")   
             
-            # Séparateurs doubles entre les grandes rangées (top/center/bottom)
             if i < 2:
-                print("═══════════╬═══════════╬═══════════")
+                # 4. On décale aussi le gros séparateur de 3 espaces
+                print("   ═══════════╬═══════════╬═══════════")
         print()
