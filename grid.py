@@ -200,6 +200,42 @@ class UltimateGrid(Grid):
         return actions
 
 
+    # def print_grid(self):
+    #     layout = [
+    #         ["top_left", "top_center", "top_right"],
+    #         ["center_left", "center_center", "center_right"],
+    #         ["bottom_left", "bottom_center", "bottom_right"]
+    #     ]
+        
+    #     print()
+    #     # 1. En-tête des colonnes (parfaitement aligné avec les centres des cases)
+    #     print("    1   2   3   4   5   6   7   8   9")
+        
+    #     for i in range(3): 
+    #         for j in range(3): 
+    #             ligne = []
+    #             for k in range(3): 
+    #                 location_name = layout[i][k]
+    #                 mini_grid = self.grid[location_name]
+    #                 cellules = mini_grid.grid[j]
+                    
+    #                 ligne.append(" " + " │ ".join(cellules) + " ")
+                
+    #             # 2. On calcule le numéro de la ligne globale (de 1 à 9)
+    #             numero_ligne = i * 3 + j + 1
+                
+    #             # 3. On affiche ce numéro avant la ligne de la grille
+    #             print(f" {numero_ligne} " + "║".join(ligne))
+                
+    #             if j < 2:
+    #                 # 4. On décale le séparateur de 3 espaces pour faire place au numéro
+    #                 print("   ───┼───┼───║───┼───┼───║───┼───┼───")   
+            
+    #         if i < 2:
+    #             # 4. On décale aussi le gros séparateur de 3 espaces
+    #             print("   ═══════════╬═══════════╬═══════════")
+    #     print()
+
     def print_grid(self):
         layout = [
             ["top_left", "top_center", "top_right"],
@@ -207,31 +243,61 @@ class UltimateGrid(Grid):
             ["bottom_left", "bottom_center", "bottom_right"]
         ]
         
+        # Motifs  pour remplacer les grilles gagnées
+        # Chaque liste contient 3 lignes de 3 caractères
+        big_X = [
+            [' ', ' ', ' '],
+            [' ', 'X', ' '],
+            [' ', ' ', ' ']
+        ]
+        
+        big_O = [
+            [' ', ' ', ' '],
+            [' ', 'O', ' '],
+            [' ', ' ', ' ']
+        ]
+
         print()
-        # 1. En-tête des colonnes (parfaitement aligné avec les centres des cases)
         print("    1   2   3   4   5   6   7   8   9")
         
-        for i in range(3): 
-            for j in range(3): 
-                ligne = []
-                for k in range(3): 
+        for i in range(3): # Blocs de 3 grilles (Lignes macro)
+            for j in range(3): # Lignes à l'intérieur des mini-grilles
+                ligne_complete = []
+                for k in range(3): # Colonnes macro
                     location_name = layout[i][k]
                     mini_grid = self.grid[location_name]
-                    cellules = mini_grid.grid[j]
                     
-                    ligne.append(" " + " │ ".join(cellules) + " ")
+                    # CONDITION D'AFFICHAGE SPÉCIALE
+                    if mini_grid.winner == 'X':
+                        # On affiche la ligne 'j' du motif géant X
+                        cellules = big_X[j]
+                        # On enlève les barres internes "│" en mettant des espaces
+                        ligne_complete.append(" " + "   ".join(cellules) + " ")
+                    
+                    elif mini_grid.winner == 'O':
+                        # On affiche la ligne 'j' du motif géant O
+                        cellules = big_O[j]
+                        # On enlève les barres internes "│" en mettant des espaces
+                        ligne_complete.append(" " + "   ".join(cellules) + " ")
+                    
+                    else:
+                        # Affichage normal avec les barres de séparation
+                        cellules = mini_grid.grid[j]
+                        ligne_complete.append(" " + " │ ".join(cellules) + " ")
                 
-                # 2. On calcule le numéro de la ligne globale (de 1 à 9)
                 numero_ligne = i * 3 + j + 1
-                
-                # 3. On affiche ce numéro avant la ligne de la grille
-                print(f" {numero_ligne} " + "║".join(ligne))
+                print(f" {numero_ligne} " + "║".join(ligne_complete))
                 
                 if j < 2:
-                    # 4. On décale le séparateur de 3 espaces pour faire place au numéro
-                    print("   ───┼───┼───║───┼───┼───║───┼───┼───")   
+                    # On ajuste le séparateur pour qu'il soit invisible là où une grille est gagnée
+                    separateurs = []
+                    for k in range(3):
+                        if self.grid[layout[i][k]].winner:
+                            separateurs.append("           ") # Vide si gagné
+                        else:
+                            separateurs.append("───┼───┼───") # Normal
+                    print("   " + "║".join(separateurs))
             
             if i < 2:
-                # 4. On décale aussi le gros séparateur de 3 espaces
                 print("   ═══════════╬═══════════╬═══════════")
         print()

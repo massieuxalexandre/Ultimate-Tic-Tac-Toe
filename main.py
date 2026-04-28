@@ -7,7 +7,7 @@ def main():
         "center_left", "center_center", "center_right", 
         "bottom_left", "bottom_center", "bottom_right"
     ]
-    player_1 = Player("Alex", 'X')
+    player_1 = Player("Humain", 'X')
     # player_2 = Player("AI", 'O')
     player_2 = AI("AI", 'O', 3)
     players = [player_1, player_2]
@@ -83,6 +83,7 @@ def main():
                 print()
             continue
         else:
+            clear()
             print(player.name, "a joué en colonne", column, "et ligne", row)
             
         ultimate_grid.print_grid()
