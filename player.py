@@ -78,12 +78,14 @@ class AI(Player):
 
         return v
 
+
     def utility(self, grid):
         if grid.winner == self.symbol: 
             return 10000  
         elif grid.winner is not None: 
             return -10000 
         return 0         
+
 
     def heuristique(self, grid):
         score = 0
@@ -92,6 +94,7 @@ class AI(Player):
         else:
             opponent_symbol = 'X'
 
+        # tous les aligements possibles pour gagner la grille principale
         ultimates_alignments = [
             ["top_left", "top_center", "top_right"],
             ["center_left", "center_center", "center_right"],
@@ -103,26 +106,32 @@ class AI(Player):
             ["top_right", "center_center", "bottom_left"]
         ]
 
+        # on ajoute les gagnants (ou None si pas de gagnant) de chaque mini grille 
         for aligment in ultimates_alignments:
             row = [grid.grid[loc].winner for loc in aligment]
             score += self.evaluate(row, self.symbol, opponent_symbol) * 100
 
+        # puis on calcule le score pour chaque mini grille (en vérifiant qui a gagné dans quelle grille)
         for location, mini_grid in grid.grid.items():
             if mini_grid.winner is None and not mini_grid.is_full():
                 
+                # on évalue les lignes de chaque mini grille
                 for i in range(3):
                     score += self.evaluate(mini_grid.grid[i], self.symbol, opponent_symbol)
                 
+                # on évalue les colonnes
                 for j in range(3):
                     col = [mini_grid.grid[0][j], mini_grid.grid[1][j], mini_grid.grid[2][j]]
                     score += self.evaluate(col, self.symbol, opponent_symbol)
                 
+                # puis les diagosnales
                 diag1 = [mini_grid.grid[0][0], mini_grid.grid[1][1], mini_grid.grid[2][2]]
                 diag2 = [mini_grid.grid[0][2], mini_grid.grid[1][1], mini_grid.grid[2][0]]
                 score += self.evaluate(diag1, self.symbol, opponent_symbol)
                 score += self.evaluate(diag2, self.symbol, opponent_symbol)
 
         return score
+
 
     def evaluate(self, row, ai_symbol, opp_symbol):
         score = 0
