@@ -4,14 +4,16 @@ from utils import *
 
 def main():
     mini_grids_locations = ["top_left", "top_center", "top_right",
-        "center_left", "center_center", "center_right", 
+        "center_left", "center_center", "center_right",
         "bottom_left", "bottom_center", "bottom_right"
     ]
     player_1 = Player("Humain", 'X')
     # player_2 = Player("AI", 'O')
-    player_2 = AI("AI", 'O', 5)
+    # Profondeur portée à 6 : grâce à make/undo (plus de deepcopy) et au tri
+    # des coups, l'IA peut chercher plus loin sans ralentir la partie.
+    player_2 = AI("AI", 'O', 7)
     players = [player_1, player_2]
-    
+
     ultimate_grid = UltimateGrid(mini_grids_locations, player_1, player_2)
 
     print("Bienvenue dans Ultimate Tic Tac Toe")
@@ -31,7 +33,7 @@ def main():
 
     elif start_choice == "2":
         tour = 1
-    
+
     clear()
     ultimate_grid.print_grid()
 
@@ -62,7 +64,7 @@ def main():
                 print("Colonne invalide, veuillez réessayer")
                 print()
                 continue
-            
+
             print("Ligne : ", end='')
             row = str(input())
             clear()
@@ -85,7 +87,7 @@ def main():
         else:
             clear()
             print(player.name, "a joué en colonne", column, "et ligne", row)
-            
+
         ultimate_grid.print_grid()
         tour += 1
 
@@ -100,17 +102,17 @@ def main():
         # match nul sur la grande grille, on compte les sous grilles gagnées
         points_p1 = 0
         points_p2 = 0
-        
+
         for location, mini_grid in ultimate_grid.grid.items():
             if mini_grid.winner == player_1.symbol:
                 points_p1 += 1
             elif mini_grid.winner == player_2.symbol:
                 points_p2 += 1
-                
+
         print("Match nul sur les alignements, comptage des grilles :")
         print(player_1.name, ":", points_p1,  "grilles")
         print(player_2.name, ":", points_p2,  "grilles")
-        
+
         if points_p1 > points_p2:
             print("Victoire aux points pour", player_1.name, "!")
         elif points_p2 > points_p1:

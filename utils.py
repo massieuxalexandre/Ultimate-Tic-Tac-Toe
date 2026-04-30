@@ -10,4 +10,3 @@ def valid_choice(choice, start, end):
         arr.append(str(i))
 
     return choice in arr
-
