@@ -90,7 +90,7 @@ class AI(Player):
     def heuristique(self, grid):
         score = 0
         if self.symbol == 'X':
-            opponent_symbol = '0'
+            opponent_symbol = 'O'
         else:
             opponent_symbol = 'X'
 
