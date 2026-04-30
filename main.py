@@ -9,7 +9,7 @@ def main():
     ]
     player_1 = Player("Humain", 'X')
     # player_2 = Player("AI", 'O')
-    player_2 = AI("AI", 'O', 3)
+    player_2 = AI("AI", 'O', 5)
     players = [player_1, player_2]
     
     ultimate_grid = UltimateGrid(mini_grids_locations, player_1, player_2)
@@ -90,10 +90,33 @@ def main():
         tour += 1
 
 
+    clear()
+    ultimate_grid.print_grid()
+    print("FIN DE LA PARTIE")
+
     if ultimate_grid.has_winner():
-        print("Le gagnant est", ultimate_grid.winner)
+        print("Victoire par alignement ! Le gagnant est", ultimate_grid.winner)
     else:
-        print("Match nul !")
+        # match nul sur la grande grille, on compte les sous grilles gagnées
+        points_p1 = 0
+        points_p2 = 0
+        
+        for location, mini_grid in ultimate_grid.grid.items():
+            if mini_grid.winner == player_1.symbol:
+                points_p1 += 1
+            elif mini_grid.winner == player_2.symbol:
+                points_p2 += 1
+                
+        print("Match nul sur les alignements, comptage des grilles :")
+        print(player_1.name, ":", points_p1,  "grilles")
+        print(player_2.name, ":", points_p2,  "grilles")
+        
+        if points_p1 > points_p2:
+            print("Victoire aux points pour", player_1.name, "!")
+        elif points_p2 > points_p1:
+            print("Victoire aux points pour", player_2.name, "!")
+        else:
+            print("Égalité parfaite")
 
 
 if __name__ == "__main__":

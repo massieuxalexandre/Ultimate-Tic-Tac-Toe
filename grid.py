@@ -112,7 +112,6 @@ class Grid:
         for row in self.grid:
             if ' ' in row:
                 return False
-            
         return True
 
 
@@ -154,10 +153,13 @@ class UltimateGrid(Grid):
             
     def is_full(self):
         for location in self.grid:
-            if not self.grid[location].is_full():
+            mini_grid = self.grid[location]
+            # Si la sous-grille n'est pas pleine et n'a pas de gagnant
+            if not mini_grid.is_full() and mini_grid.winner is None:
                 return False
-            
         return True
+    
+
     
     def has_winner(self):
         for row in range(0, 9, 3):
