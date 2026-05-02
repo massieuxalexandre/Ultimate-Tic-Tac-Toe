@@ -1,30 +1,33 @@
 from player import Player, AI
-from grid import Grid, UltimateGrid
+from grid import UltimateGrid
 from utils import *
 
 def main():
-    mini_grids_locations = ["top_left", "top_center", "top_right",
-        "center_left", "center_center", "center_right", 
-        "bottom_left", "bottom_center", "bottom_right"
-    ]
-    player_1 = Player("Humain", 'X')
-    # player_2 = Player("AI", 'O')
-    player_2 = AI("AI", 'O', 5)
-    players = [player_1, player_2]
+    # création de 2 joueurs (1 humain qui sera l'utilisateur et 1 ia)
+    human = Player("Humain", 'X')
+    # ai = Player("AI", 'O')
+    ai = AI("AI", 'O', 6)
     
-    ultimate_grid = UltimateGrid(mini_grids_locations, player_1, player_2)
+    # création de la grille principale contenant 9 sous grilles (jouée par les 2 joueurs)
+    mini_grids_locations = ["top_left", "top_center", "top_right",
+                            "center_left", "center_center", "center_right", 
+                            "bottom_left", "bottom_center", "bottom_right"
+    ]
+    ultimate_grid = UltimateGrid(mini_grids_locations, human, ai)
 
+    # choisir qui commence la partie (on prend un string pour gérer plus facilement une erreur de frappe)
     print("Bienvenue dans Ultimate Tic Tac Toe")
     print("Qui commence la partie ? :")
-    print("1.", player_1.name)
-    print("2.", player_2.name)
+    print("1.", human.name)
+    print("2.", ai.name)
     print()
     start_choice = str(input())
 
+    # fonctino "valid_choice" dans utils.py. Elle permet de checker si le choix de l'utilisateur est valide ou non (compris parmi un bornage)
     while not valid_choice(start_choice, 1, 2):
         print("Choix invalide, veuillez réessayer.")
         start_choice = str(input())
-        clear()
+        print()
 
     if start_choice == "1":
         tour = 0
@@ -35,24 +38,29 @@ def main():
     clear()
     ultimate_grid.print_grid()
 
-
-
+    # boucle principale. tant que la grille n'est pas remplie et pas de gagnant 
     while not ultimate_grid.is_full() and not ultimate_grid.has_winner():
         if (tour % 2 == 0):
-            player = players[0]
+            # tour pair = tour de l'humain
+            player = human
         else:
-            player = players[1]
+            # tour impair = tour de l'ai
+            player = ai
 
-
+        # on dit au joueur dans quelle sous grille il doit jouer
         if ultimate_grid.next_grid != None:
             print(player.name, "doit jouer dans la grille", ultimate_grid.next_grid)
         else:
             print(player.name, "peut jouer dans n'importe quelle grille")
 
+        # si c'est au tour de l'AI, il joue tout seul (grâce au minimax + élagage alpha beta)
         if isinstance(player, AI):
             action = player.get_action(ultimate_grid)
             column, row = action[0], action[1]
 
+
+        # si c'est au tour du joueur, il choisit où il joue (colonne puis ligne)
+        # on prend l'input en string pour gérer les erreurs plus facilement avec la fonction valid_choice
         else:
             print("Colonne : ", end='')
             column = str(input())
@@ -73,6 +81,7 @@ def main():
                 print()
                 continue
 
+        # si la case choisie par l'utilisateur n'est pas possible, on affiche l'erreur
         if not ultimate_grid.play(player, int(column), int(row)):
             clear()
             ultimate_grid.print_grid()
@@ -82,41 +91,53 @@ def main():
                 print("Case déjà occupée, veuillez réessayer")
                 print()
             continue
+
+        # sinon il peut bien jouer donc on affiche ce qu'il a joué
         else:
             clear()
             print(player.name, "a joué en colonne", column, "et ligne", row)
             
+        # affichage de la grille puis on passe au tour suivant
         ultimate_grid.print_grid()
         tour += 1
 
 
+    # fin de boucle = grille complète ou gagnée
     clear()
     ultimate_grid.print_grid()
-    print("FIN DE LA PARTIE")
+    print("Fin de la partie !")
 
+    # s'il y a un gagnant, on l'affiche
     if ultimate_grid.has_winner():
-        print("Victoire par alignement ! Le gagnant est", ultimate_grid.winner)
+        if ultimate_grid.winner == human.symbol:
+            print("Victoire de :", human.name)
+        else:
+            print("Victoire de :", ai.name)
     else:
-        # match nul sur la grande grille, on compte les sous grilles gagnées
+        # si match nul sur la grande grille, on compte les sous grilles gagnées
         points_p1 = 0
         points_p2 = 0
         
         for location, mini_grid in ultimate_grid.grid.items():
-            if mini_grid.winner == player_1.symbol:
+            if mini_grid.winner == human.symbol:
                 points_p1 += 1
-            elif mini_grid.winner == player_2.symbol:
+            elif mini_grid.winner == ai.symbol:
                 points_p2 += 1
                 
-        print("Match nul sur les alignements, comptage des grilles :")
-        print(player_1.name, ":", points_p1,  "grilles")
-        print(player_2.name, ":", points_p2,  "grilles")
+        print("Match nul sur les alignements, comptage des sous grilles remportées :")
+        print(human.name, ":", points_p1,  "grilles")
+        print(ai.name, ":", points_p2,  "grilles")
         
         if points_p1 > points_p2:
-            print("Victoire aux points pour", player_1.name, "!")
+            print("Victoire aux points pour", human.name, "!")
         elif points_p2 > points_p1:
-            print("Victoire aux points pour", player_2.name, "!")
+            print("Victoire aux points pour", ai.name, "!")
+
+        # si autant de sous grilles gagnées pour l'un que pour l'autre => égalité parfaite
         else:
             print("Égalité parfaite")
+
+        print()
 
 
 if __name__ == "__main__":
