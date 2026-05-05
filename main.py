@@ -1,12 +1,12 @@
-from time import time
+import time
 from player import Player, AI
 from grid import UltimateGrid
 from utils import *
 
 def main():
     # création de 2 joueurs (1 humain qui sera l'utilisateur et 1 ia)
-    # human = Player("Humain", 'X')
-    human = AI("Humain", 'X', 7)
+    human = Player("Humain", 'X')
+    # human = AI("Humain", 'X', 7)
     # ai = Player("AI", 'O')
     ai = AI("AI", 'O', 7)
     
@@ -62,6 +62,7 @@ def main():
             action = player.get_action(ultimate_grid)
             column, row = action[0], action[1]
             end_time = time.time()
+            duration = end_time - start_time
 
         # si c'est au tour du joueur, il choisit où il joue (colonne puis ligne)
         # on prend l'input en string pour gérer les erreurs plus facilement avec la fonction valid_choice
@@ -101,7 +102,7 @@ def main():
             clear()
             print(player.name, "a joué en colonne", column, "et ligne", row)
             if isinstance(player, AI):
-                print("Temps d'execution", end_time)
+                print("Temps d'execution", duration, "secondes")
             
         # affichage de la grille puis on passe au tour suivant
         ultimate_grid.print_grid()
