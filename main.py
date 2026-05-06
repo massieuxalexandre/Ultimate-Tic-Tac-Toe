@@ -6,9 +6,9 @@ from utils import *
 def main():
     # création de 2 joueurs (1 humain qui sera l'utilisateur et 1 ia)
     human = Player("Humain", 'X')
-    # human = AI("Humain", 'X', 7)
+    # human = AI("Humain", 'X', 6)
     # ai = Player("AI", 'O')
-    ai = AI("AI", 'O', 7)
+    ai = AI("AI", 'O', 6)
     
     # création de la grille principale contenant 9 sous grilles (jouée par les 2 joueurs)
     mini_grids_locations = ["top_left", "top_center", "top_right",
